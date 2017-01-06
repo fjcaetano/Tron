@@ -41,6 +41,11 @@ public:
   * @param context: context to the callback function.
   */
   void up(CallbackFn callback, void *context);
+
+  /**
+  * Resets detection to avoid signaling existing button pushes.
+  */
+  void reset();
 };
 
 #endif

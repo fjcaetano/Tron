@@ -4,18 +4,23 @@
 #include <Button.h>
 #include <LiquidCrystal.h>
 
-/** The callback function to exiting the menu.
+/**
+* The callback function to exiting the menu.
+*
+* @param context: The context to the callback function
 */
-typedef void (*Function)(void);
+typedef void (*Function)(void *context);
 
 class Menu {
-  Button button;
+  Button *button;
   Function menuEndedPtr;
-  LiquidCrystal lcd;
+  LiquidCrystal *lcd;
 
   int eepromAddr;
   int wheelRadius;
   int isSecondDigit;
+
+  void *context;
 
   void showWheelCirc();
 
@@ -28,15 +33,17 @@ public:
   * @param lcd: A LiquidCrystal object
   * @param eaddr: The EEPROM address to the stored wheel radius
   * @param callback: A callback function to leave the menu
+  * @param context: The callback function context
   */
-  Menu(Button button, LiquidCrystal lcd, int eaddr, Function callback) :
+  Menu(Button *button, LiquidCrystal *lcd, int eaddr, Function callback, void *context) :
     button(button),
     menuEndedPtr(callback),
     lcd(lcd),
     eepromAddr(eaddr),
     wheelRadius(0),
-    isSecondDigit(false)
-    { lcd.begin(16, 2); }
+    isSecondDigit(false),
+    context(context)
+    { }
 
   /**
   * Starts the menu display
