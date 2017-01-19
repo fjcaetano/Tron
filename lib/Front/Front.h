@@ -1,16 +1,17 @@
 #ifndef Front_h
 #define Front_h
 
-#include <EEPROM.h>
 #include <LiquidCrystal.h>
 #include <Button.h>
 #include <Menu.h>
+#include <Hall.h>
 
 class Front {
   float wheelRadius;
   int eepromAddr;
   LiquidCrystal *lcd;
   Button *button;
+  Hall *hall;
   Menu *menu;
 
   int speed(int rpm);
@@ -22,12 +23,14 @@ public:
   *
   * @param lcd: A pointer to the LCD screen
   * @param button: A pointer to the controller button
+  * @param hall: The hall effect sensor.
   * @param eepromAddr: The EEPROM address to the wheel radius.
   */
-  Front(LiquidCrystal *lcd, Button *button, int eepromAddr) :
+  Front(LiquidCrystal *lcd, Button *button, Hall *hall, int eepromAddr) :
     eepromAddr(eepromAddr),
     lcd(lcd),
-    button(button)
+    button(button),
+    hall(hall)
     { }
 
   /**

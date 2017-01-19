@@ -2,50 +2,62 @@
 #define Button_h
 
 #include <Arduino.h>
+#include <InterruptHandler.h>
 
-class Button {
-  int pin;
+/**
+* The callback function for detections.
+*
+* @param context: context to the callback.
+* @param duration: the press duration/
+*/
+typedef void (*CallbackFn)(void *context, long duration);
+
+
+class Button: public InterruptHandler {
   long buttonDownStart;
+  uint8_t pin;
+
+  CallbackFn upCallback;
+  CallbackFn downCallback;
+
+  void *upContext;
+  void *downContext;
+
+  virtual void handleInterrupt(int8_t interruptNum);
 
 public:
-  /**
-  * The callback function for detections.
-  *
-  * @param context: context to the callback.
-  * @param duration: the press duration/
-  */
-  typedef void (*CallbackFn)(void *context, long duration);
-
   /**
   * Initializes a button.
   *
   * @param pin: The button pin number on the micro-controller.
   */
-  Button(int pin) :
-    pin(pin),
-    buttonDownStart(-1)
-    { }
+  Button(uint8_t pin);
 
   /**
-  * Detects when `button` is pushed and sends the press duration to callback.
+  * Sets the callback action for when the button is released.
   *
-  * @param callback: the callback function.
-  * @param context: context to the callback function.
+  * @param callback: The callback function.
+  * @param context: Context to the callback function.
   */
-  void down(CallbackFn callback, void *context);
+  void setUpCallback(CallbackFn callback, void *context);
 
   /**
-  * Detects when `button` is released and sends the press duration to callback.
+  * Sets the callback action for when the button is pushed down.
   *
-  * @param callback: the callback function.
-  * @param context: context to the callback function.
+  * @param callback: The callback function.
+  * @param context: Context to the callback function.
   */
-  void up(CallbackFn callback, void *context);
+  void setDownCallback(CallbackFn callback, void *context);
 
   /**
   * Resets detection to avoid signaling existing button pushes.
   */
   void reset();
+
+  /**
+  * The button's loop function. Must be called inside the main loop.
+  */
+  void loop();
 };
 
 #endif

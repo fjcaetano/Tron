@@ -1,9 +1,9 @@
-#define POT A0
 #define LONG_PRESS 3000
 
 #include "Front.h"
 
 #include <Arduino.h>
+#include <EEPROM.h>
 #include <LiquidCrystal.h>
 #include <Button.h>
 #include <math.h>
@@ -25,7 +25,9 @@ void Front::show() {
   // Resets the menu
   delete menu;
   menu = NULL;
+
   button->reset();
+  button->setDownCallback(&fwdBtnDown, this);
 
   if (wheelRadius == 0) {
     showMenu();
@@ -41,7 +43,7 @@ void Front::loop() {
     return;
   }
 
-  int rpm = analogRead(POT);
+  int rpm = hall->getRpm();
 
   lcd->setCursor(0, 0);
   lcd->printf("Velo: %d Km/h  ", speed(rpm));
@@ -49,8 +51,7 @@ void Front::loop() {
   lcd->setCursor(0, 1);
   lcd->printf("RPM: %d    ", rpm);
 
-  button->down(&fwdBtnDown, this);
-  button->up(NULL, NULL);
+  button->loop();
 
   delay(10);
 }

@@ -1,0 +1,6 @@
+[submodule "lib/StandardCplusplus"]
+	path = lib/StandardCplusplus
+	url = https://github.com/maniacbug/StandardCplusplus
+[submodule "lib/InterruptHandler"]
+	path = lib/InterruptHandler
+	url = https://github.com/zeitgeist87/InterruptHandler.git

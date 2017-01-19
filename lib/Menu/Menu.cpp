@@ -21,6 +21,9 @@ void Menu::show() {
   wheelRadius = EEPROM.read(eepromAddr);
   button->reset();
 
+  button->setUpCallback(&fwdBtnUp, this);
+  button->setDownCallback(&fwdBtnDown, this);
+
   lcd->clear();
   lcd->setCursor(0, 0);
   lcd->printf("Raio: %.2dcm ", wheelRadius);
@@ -32,8 +35,7 @@ void Menu::show() {
 * The loop function
 */
 void Menu::loop() {
-  button->down(&fwdBtnDown, this);
-  button->up(&fwdBtnUp, this);
+  button->loop();
 
   showWheelCirc();
   delay(50);

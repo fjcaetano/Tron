@@ -1,37 +1,37 @@
 #include "Button.h"
 
-#include <Arduino.h>
-
-static void fwdBtnUp(void *context);
 
 /**
-* Detects when `button` is pushed and sends the press duration to callback.
+* Initializes a button.
 */
-void Button::down(CallbackFn callback, void *context) {
-  int read = digitalRead(pin);
-  if (read == LOW || buttonDownStart == -2) {
-    return;
-  }
+Button::Button(uint8_t pin) {
+  this->pin = pin;
+  buttonDownStart = -1;
 
-  if (buttonDownStart == -1) {
-    buttonDownStart = millis();
-  }
+  upCallback = NULL;
+  downCallback = NULL;
 
-  callback(context, millis() - buttonDownStart);
+  upContext = NULL;
+  downContext = NULL;
+
+  pinMode(pin, INPUT);
+  attachInterrupt(pin, CHANGE);
 }
 
 /**
-* Detects when `button` is released and sends the press duration to callback.
+* Sets the callback action for when the button is released.
 */
-void Button::up(CallbackFn callback, void *context) {
-  int read = digitalRead(pin);
-  if (read == HIGH || buttonDownStart < 0) {
-    if (read == LOW && buttonDownStart == -2) buttonDownStart = -1;
-    return;
-  }
+void Button::setUpCallback(CallbackFn callback, void *context) {
+  upCallback = callback;
+  upContext = context;
+}
 
-  callback(context, millis() - buttonDownStart);
-  buttonDownStart = -1;
+/**
+* Sets the callback action for when the button is pushed down.
+*/
+void Button::setDownCallback(CallbackFn callback, void *context) {
+  downCallback = callback;
+  downContext = context;
 }
 
 /**
@@ -39,4 +39,31 @@ void Button::up(CallbackFn callback, void *context) {
 */
 void Button::reset() {
   buttonDownStart = -2;
+}
+
+/**
+* The button's loop function. Must be called inside the main loop.
+*/
+void Button::loop() {
+  if (buttonDownStart >= 0 && digitalRead(pin) && upCallback) {
+    upCallback(upContext, millis() - buttonDownStart);
+  }
+}
+
+// Private Methods
+
+void Button::handleInterrupt(int8_t interruptNum) {
+  if (digitalRead(interruptNum)) {
+    // Did press down
+    buttonDownStart = millis();
+    downCallback(downContext, millis() - buttonDownStart);
+  }
+  else if (buttonDownStart != -2) {
+    // Did release
+    if (upCallback != NULL) {
+      upCallback(upContext, millis() - buttonDownStart);
+    }
+
+    buttonDownStart = -1;
+  }
 }
