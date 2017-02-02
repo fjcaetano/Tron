@@ -43,14 +43,7 @@ void Front::loop() {
     return;
   }
 
-  int rpm = hall->getRpm();
-
-  lcd->setCursor(0, 0);
-  lcd->printf("Velo: %d Km/h  ", speed(rpm));
-
-  lcd->setCursor(0, 1);
-  lcd->printf("RPM: %d    ", rpm);
-
+  updateLCD();
   button->loop();
 
   delay(10);
@@ -74,6 +67,24 @@ int Front::speed(int rpm) {
 void Front::showMenu() {
   menu = new Menu(button, lcd, eepromAddr, menuEnded, this);
   menu->show();
+}
+
+
+void Front::updateLCD() {
+  // Updates the LCD every 100ms
+  if (millis() - previousLCDUpdate < 375) {
+    return;
+  }
+
+  int rpm = hall->getRpm();
+
+  lcd->setCursor(0, 0);
+  lcd->printf("Velo: %d Km/h  ", speed(rpm));
+
+  lcd->setCursor(0, 1);
+  lcd->printf("RPM: %d    ", rpm);
+
+  previousLCDUpdate = millis();
 }
 
 static void menuEnded(void *context) {

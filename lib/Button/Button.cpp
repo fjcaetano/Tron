@@ -15,7 +15,7 @@ Button::Button(uint8_t pin) {
   downContext = NULL;
 
   pinMode(pin, INPUT);
-  attachInterrupt(pin, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(pin), CHANGE);
 }
 
 /**

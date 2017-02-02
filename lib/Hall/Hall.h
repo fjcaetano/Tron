@@ -9,7 +9,6 @@ class Hall: public InterruptHandler {
   uint8_t pin;
 
   volatile long previousPassing;
-  volatile int rpm;
   volatile long delta;
 
   virtual void handleInterrupt(int8_t interruptNum);
@@ -26,8 +25,6 @@ public:
   * The current wheel rpm;
   */
   int getRpm();
-
-  long getDelta();
 };
 
 #endif

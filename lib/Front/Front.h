@@ -14,8 +14,11 @@ class Front {
   Hall *hall;
   Menu *menu;
 
+  long previousLCDUpdate;
+
   int speed(int rpm);
   void showMenu();
+  void updateLCD();
 
 public:
   /**
@@ -30,7 +33,8 @@ public:
     eepromAddr(eepromAddr),
     lcd(lcd),
     button(button),
-    hall(hall)
+    hall(hall),
+    previousLCDUpdate(0)
     { }
 
   /**

@@ -1,5 +1,7 @@
 #include "Hall.h"
 
+#include <limits.h>
+
 
 /**
 * Initializes a Hall effect sensor.
@@ -7,33 +9,28 @@
 Hall::Hall(uint8_t pin) {
   this->pin = pin;
   previousPassing = micros();
-  rpm = 0;
+  delta = LONG_MAX;
 
   pinMode(pin, INPUT);
-  attachInterrupt(digitalPinToInterrupt(pin), RISING);
+  attachInterrupt(digitalPinToInterrupt(pin), FALLING);
 }
 
 /**
 * The current wheel rpm;
 */
 int Hall::getRpm() {
-  return rpm;
-}
+  long passing = millis() - previousPassing;
+  if (passing > delta) {
+    delta = passing;
+  }
 
-long Hall::getDelta() {
-  return delta;
+  return 60000 / delta; // 1 min = 60,000 ms
 }
 
 // Private Methods
 
 void Hall::handleInterrupt(int8_t interruptNum) {
   delta = millis() - previousPassing;
-
-  // It is unlikely that delta will naturally go lower than 100ms.
-  // This is to prevent noisy interrupts.
-  if (delta > 100) {
-    rpm = 60000 / delta;
-  }
 
   previousPassing = millis();
 }
